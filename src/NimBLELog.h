@@ -10,11 +10,15 @@
 
 #include "nimconfig.h"
 
+#include "spdlog/spdlog.h"
+
 #if defined(CONFIG_BT_ENABLED)
 
 #ifdef ARDUINO_ARCH_ESP32
 #include "syscfg/syscfg.h"
 #include "modlog/modlog.h"
+
+extern const char *fmt_snprintf(const char *format, ...);
 
 // If Arduino is being used, strip out the colors and ignore log printing below ui setting.
 // Note: because CONFIG_LOG_DEFAULT_LEVEL is set at ERROR in Arduino we must use MODLOG_DFLT(ERROR
@@ -29,31 +33,30 @@
 #endif
 
 #if CONFIG_NIMBLE_CPP_DEBUG_LEVEL >= 4
-#define NIMBLE_LOGD( tag, format, ... ) MODLOG_DFLT(ERROR,      "D %s: "#format"\n",tag,##__VA_ARGS__)
+#define NIMBLE_LOGD( tag, format, ... ) spdlog::debug(fmt_snprintf(format,##__VA_ARGS__))
 #else
 #define NIMBLE_LOGD( tag, format, ... ) (void)tag
 #endif
 
 #if CONFIG_NIMBLE_CPP_DEBUG_LEVEL >= 3
-#define NIMBLE_LOGI( tag, format, ... ) MODLOG_DFLT(ERROR,      "I %s: "#format"\n",tag,##__VA_ARGS__)
+#define NIMBLE_LOGI( tag, format, ... ) spdlog::info(fmt_snprintf(format,##__VA_ARGS__))
 #else
 #define NIMBLE_LOGI( tag, format, ... ) (void)tag
 #endif
 
 #if CONFIG_NIMBLE_CPP_DEBUG_LEVEL >= 2
-#define NIMBLE_LOGW( tag, format, ... ) MODLOG_DFLT(ERROR,      "W %s: "#format"\n",tag,##__VA_ARGS__)
+#define NIMBLE_LOGW( tag, format, ... ) spdlog::warn(fmt_snprintf(format,##__VA_ARGS__))
 #else
 #define NIMBLE_LOGW( tag, format, ... ) (void)tag
 #endif
 
 #if CONFIG_NIMBLE_CPP_DEBUG_LEVEL >= 1
-#define NIMBLE_LOGE( tag, format, ... ) MODLOG_DFLT(ERROR,      "E %s: "#format"\n",tag,##__VA_ARGS__)
+#define NIMBLE_LOGE( tag, format, ... ) spdlog::error(fmt_snprintf(format,##__VA_ARGS__))
 #else
 #define NIMBLE_LOGE( tag, format, ... ) (void)tag
 #endif
 
-#define NIMBLE_LOGC( tag, format, ... ) MODLOG_DFLT(CRITICAL,   "CRIT %s: "#format"\n",tag,##__VA_ARGS__)
-
+#define NIMBLE_LOGC( tag, format, ... ) spdlog::critical(fmt_snprintf(format,##__VA_ARGS__))
 #else
 
 #include "esp_log.h"
